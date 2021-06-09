@@ -23,3 +23,5 @@ class Switch(object):
             return True
         else:
             return False
+
+    

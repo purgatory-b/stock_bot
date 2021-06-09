@@ -65,8 +65,8 @@ class ChatDB(object):
         user.telegram_user_id = data['user_id']
         user.telegram_chat_id = data['chat_id']
         user.user_nicename = data['nicename']
-        user.user_email = data['email']
-        user.user_phone = data['phone']
+        user.user_email = ''
+        user.user_phone = ''
         user.user_created = created
         user.user_status = 1
         user.display_name = data['display_name']
@@ -95,11 +95,40 @@ class ChatDB(object):
         ).first()
         
         if user:
-            return user
+            return user.ID
         else:
             return None
 
+    def create_chat(self, data):
+        created = int(time.mktime(datetime.now().timetuple()))
         
+        sqlalchemy.Table(self.__bot_chats__, self.metadata, autoload=True)
+        Chat = self.automap.classes[self.__bot_chats__]
+
+        chat = Chat()
+        chat.chat_user = data['chat_user']
+        chat.chat_created = created
+        chat.chat_ask = data['chat_ask']
+        chat.bot_response = data['bot_response']
+        chat.bot_response_type = data['bot_response_type']
+        chat.chat_parent = data['chat_parent']
+        chat.chat_intent = data['chat_intent']
+        chat.chat_action = data['chat_action']
+        chat.chat_entity = data['chat_entity']
+        chat.chat_context = data['chat_context']
+
+        self.session.add(chat)
+        self.session.flush()
+
+        try:
+            self.session.commit()
+            loguru.logger.info('新增對話記錄成功')
+            return chat.ID
+        except Exception as e:
+            loguru.logger.error('新增對話記錄失敗')
+            loguru.logger.error(e)
+            self.session.rollback()
+            return None
 
 
 

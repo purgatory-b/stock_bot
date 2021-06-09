@@ -4,7 +4,7 @@ from bs4 import BeautifulSoup
 class News(object):
     def __init__(self, req):
         self.type = req.get("queryResult").get("parameters").get("serviceterm")
-        self.chat_id = self.chat_id = req.get("originalDetectIntentRequest").get("payload").get("data").get("callback_query").get("message").get("chat").get("id")
+        self.chat_id = req.get("user").get("chat").get("id")
     
     def google(self):
         target_url = 'https://news.google.com/topstories?hl=zh-TW&gl=TW&ceid=TW%3Azh-Hant'
